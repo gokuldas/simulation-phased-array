@@ -24,7 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def common_PA_elements(self):
-    """Generate array elements for a common array"""
+    """Generates array elements for a common array"""
     el_n = \
     np.linspace(-(self.el_num - 1.0)/2, (self.el_num - 1.0)/2, self.el_num)
 
@@ -34,12 +34,12 @@ def common_PA_elements(self):
     self.el_amp = np.ones(el_n.shape)
     self.el_phi = el_n * self.el_phs
 
-#############################################
+###############################################################################
 
 class PhasedArray:
     """Phased Array simulation"""
     def __init__(self, res, rng, el_sep, el_num, el_phs):
-        """Initialize array parameters
+        """Initializes array parameters
 
         res     : Display Resolution
         rng     : Field range in terms of wavelength
@@ -57,7 +57,7 @@ class PhasedArray:
     gen_elements = common_PA_elements
     
     def calc_field(self):
-        """Calculate field"""
+        """Calculates field"""
 
         x0 = y0 = \
         np.linspace(-2 * np.pi * self.rng, 2 * np.pi * self.rng, self.res)
@@ -77,20 +77,21 @@ class PhasedArray:
             val = az * np.sin(r + pz)
             self._z = self._z + val
         
-    def display(self):
-        """Display field"""
+    def render(self):
+        """Displays field"""
         #zm = np.ma.masked_array(z, mask = self._mask)
-        fig = plt.figure()
-        ax = fig.add_axes([0, 0, 1, 1])
-        ax.contourf(self._x, self._y, self._z)
-        ax.plot(self.el_x, self.el_y, 'o')
-        fig.show()
-
+        self._fig = plt.figure()
+        self._fldax = self._fig.add_axes([0, 0, 1, 1])
+        self._fldax.contourf(self._x, self._y, self._z)
+        self._fldax.plot(self.el_x, self.el_y, 'o')
+        
     def simulate(self):
-        """Run phased array simulation"""
+        """Runs phased array simulation (static)"""
         self.gen_elements()
         self.calc_field()
-        self.display()
+        self.render()
+        self._fig.show()
+
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
@@ -121,5 +122,6 @@ params_endfire = {    \
 'el_phs' : 2 * np.pi * 0.5}
 
 PAEndfire = PhasedArray(**params_endfire)
-############################################# 
+#############################################
+ 
 
