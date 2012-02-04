@@ -24,6 +24,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+from guppy import hpy
+hp = hpy() 
+
 def common_PA_elements(self):
     """Generates array elements for a common array"""
     el_n = \
@@ -100,6 +103,10 @@ class PhasedArray:
         self.gen_elements()
         self.calc_field()
         self.render()
+        # Profiler code below
+        if frame % 20 == 0: 
+           print 'Frame: ', frame  
+           print hp.heap()
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
