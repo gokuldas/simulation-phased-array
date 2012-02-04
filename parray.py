@@ -22,14 +22,14 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FunctAnimation
+from matplotlib.animation import FuncAnimation
 
 def common_PA_elements(self):
     """Generates array elements for a common array"""
     el_n = \
     np.linspace(-(self.el_num - 1.0)/2, (self.el_num - 1.0)/2, self.el_num)
 
-    print el_n
+    # print el_n
     self.el_x = 2 * np.pi * self.el_sep * el_n
     self.el_y = el_n * 0
     self.el_amp = np.ones(el_n.shape)
@@ -53,7 +53,9 @@ class PhasedArray:
         self.el_sep = el_sep
         self.el_num = el_num
         self.el_phs = el_phs
-
+        self._fig = plt.figure()
+        self._fldax = self._fig.add_axes([0, 0, 1, 1])
+    
     # Define a replacable implementation of array element generator
     gen_elements = common_PA_elements
     
@@ -81,8 +83,7 @@ class PhasedArray:
     def render(self):
         """Displays field"""
         #zm = np.ma.masked_array(z, mask = self._mask)
-        self._fig = plt.figure()
-        self._fldax = self._fig.add_axes([0, 0, 1, 1])
+        self._fldax.cla()
         self._fldax.contourf(self._x, self._y, self._z)
         self._fldax.plot(self.el_x, self.el_y, 'o')
         
@@ -92,18 +93,13 @@ class PhasedArray:
         self.calc_field()
         self.render()
         self._fig.show()
-
-    def clear(self):
-        """Clears figure for next step in animation"""
-        self._fig.delaxes(self._fldax)
-
-    def _play(self):
+        
+    def play(self, frame):
         """Updates Parray and field for next step in animated simulation"""
-        self.el_phs = self.el_phs + (2 * np.pi) / 200
+        self.el_phs = frame * (2 * np.pi) / 200
         self.gen_elements()
         self.calc_field()
         self.render()
-
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
@@ -139,7 +135,7 @@ PAEndfire = PhasedArray(**params_endfire)
 #############################################
 ################ ANIMATION ##################
 #############################################
+PABroadfire.simulate()
 anim = FuncAnimation(PABroadfire._fig, PABroadfire.play, 
-       init_func = PABroadfire.clear, interval = 200, repeat = False,
-       frames = 200)
+       interval = 500, repeat = False, frames = 200)
 
