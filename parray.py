@@ -22,7 +22,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+import subprocess
 
 def common_PA_elements(self):
     """Generates array elements for a common array"""
@@ -94,12 +94,17 @@ class PhasedArray:
         self.render()
         self._fig.show()
         
-    def play(self, frame):
-        """Updates Parray and field for next step in animated simulation"""
-        self.el_phs = frame * (2 * np.pi) / 200
-        self.gen_elements()
-        self.calc_field()
-        self.render()
+    def animate(self, path, prefix, phase_range, frames):
+        """Creates animation pngs"""
+        for i in xrange(frames):
+            self.el_phs = self.el_phs + phase_range / frames
+            self.gen_elements()
+            self.calc_field()
+            self.render()
+
+            filename = path + prefix + str('%03d' % i) + '.png'
+            self._fig.savefig(filename, dpi = 100)
+            
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
@@ -132,17 +137,4 @@ params_endfire = {    \
 PAEndfire = PhasedArray(**params_endfire)
 #############################################
 
-#############################################
-################ ANIMATION ##################
-#############################################
-params_animated = {    \
-'res' : 200.0,  \
-'rng' : 30.0,   \
-'el_sep' : 0.5, \
-'el_num' : 10,   \
-'el_phs' : 0 }
-
-PAAnimated = PhasedArray(**params_animated)
-anim = FuncAnimation(PAAnimated._fig, PAAnimated.play, 
-       interval = 1000, repeat = False, frames = 200)
 
