@@ -105,6 +105,19 @@ class PhasedArray:
             filename = path + prefix + str('%03d' % i) + '.png'
             self._fig.savefig(filename, dpi = 100)
             
+        command = ('mencoder',
+                   'mf://' + path + prefix + '*.png',
+                   '-mf',
+                   'type=png:w=800:h=600:fps=25',
+                   '-ovc',
+                   'lavc',
+                   '-lavcopts',
+                   'vcodec=mpeg4',
+                   '-oac',
+                   'copy',
+                   '-o',
+                   path + prefix + '.avi')
+        subprocess.check_call(command)
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
