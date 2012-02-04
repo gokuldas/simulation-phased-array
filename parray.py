@@ -135,7 +135,14 @@ PAEndfire = PhasedArray(**params_endfire)
 #############################################
 ################ ANIMATION ##################
 #############################################
-PABroadfire.simulate()
-anim = FuncAnimation(PABroadfire._fig, PABroadfire.play, 
-       interval = 500, repeat = False, frames = 200)
+params_animated = {    \
+'res' : 200.0,  \
+'rng' : 30.0,   \
+'el_sep' : 0.5, \
+'el_num' : 10,   \
+'el_phs' : 0 }
+
+PAAnimated = PhasedArray(**params_animated)
+anim = FuncAnimation(PAAnimated._fig, PAAnimated.play, 
+       interval = 1000, repeat = False, frames = 200)
 
