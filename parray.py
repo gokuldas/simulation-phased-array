@@ -22,6 +22,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FunctAnimation
 
 def common_PA_elements(self):
     """Generates array elements for a common array"""
@@ -92,6 +93,17 @@ class PhasedArray:
         self.render()
         self._fig.show()
 
+    def clear(self):
+        """Clears figure for next step in animation"""
+        self._fig.delaxes(self._fldax)
+
+    def _play(self):
+        """Updates Parray and field for next step in animated simulation"""
+        self.el_phs = self.el_phs + (2 * np.pi) / 200
+        self.gen_elements()
+        self.calc_field()
+        self.render()
+
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
@@ -123,5 +135,11 @@ params_endfire = {    \
 
 PAEndfire = PhasedArray(**params_endfire)
 #############################################
- 
+
+#############################################
+################ ANIMATION ##################
+#############################################
+anim = FuncAnimation(PABroadfire._fig, PABroadfire.play, 
+       init_func = PABroadfire.clear, interval = 200, repeat = False,
+       frames = 200)
 
