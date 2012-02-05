@@ -24,6 +24,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import subprocess
 
+###############################################################################
+############################  REPLACABLE METHODS ##############################
+###############################################################################
 def common_PA_elements(self):
     """Generates array elements for a common array"""
     el_n = \
@@ -35,8 +38,39 @@ def common_PA_elements(self):
     self.el_amp = np.ones(el_n.shape)
     self.el_phi = el_n * self.el_phs
 
-###############################################################################
+def ffmpeg_vp8(self, path, prefix):
+    """Encodes video to webm using ffmpeg"""
+    command = ('ffmpeg',
+               '-f',
+               'image2',
+               '-i',
+               path + prefix + '%03d.png',
+               '-r',
+               '25',
+               '-vcodec',
+               'libvpx',
+               path + prefix + '.webm')
+    subprocess.check_call(command)
 
+def mencoder(self, path, prefix):
+    """Encodes video using mencoder"""
+    command = ('mencoder',
+               'mf://' + path + prefix + '*.png',
+               '-mf',
+               'type=png:w=800:h=600:fps=25',
+               '-ovc',
+               'lavc',
+               '-lavcopts',
+               'vcodec=mpeg4',
+               '-oac',
+               'copy',
+               '-o',
+               path + prefix + '.avi')
+    subprocess.check_call(command)
+
+###############################################################################
+####################  PHASED ARRAY CLASS IMPLEMENTATION #######################
+###############################################################################
 class PhasedArray:
     """Phased Array simulation"""
     def __init__(self, res, rng, el_sep, el_num, el_phs):
@@ -93,6 +127,9 @@ class PhasedArray:
         self.calc_field()
         self.render()
         self._fig.show()
+
+    # Define a replacable implementation of video encoder
+    vencode = ffmpeg_vp8
         
     def animate(self, path, prefix, phase_range, frames):
         """Creates animation pngs"""
@@ -101,23 +138,13 @@ class PhasedArray:
             self.gen_elements()
             self.calc_field()
             self.render()
+            print 'Creating frame: ', i
 
             filename = path + prefix + str('%03d' % i) + '.png'
             self._fig.savefig(filename, dpi = 100)
             
-        command = ('mencoder',
-                   'mf://' + path + prefix + '*.png',
-                   '-mf',
-                   'type=png:w=800:h=600:fps=25',
-                   '-ovc',
-                   'lavc',
-                   '-lavcopts',
-                   'vcodec=mpeg4',
-                   '-oac',
-                   'copy',
-                   '-o',
-                   path + prefix + '.avi')
-        subprocess.check_call(command)
+        print 'Encoding video'
+        self.vencode(path, prefix)
 
 #############################################
 ########## COMMON PHASED ARRAYS #############
