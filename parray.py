@@ -33,7 +33,6 @@ def common_PA_elements(self):
     el_n = \
     np.linspace(-(self.el_num - 1.0)/2, (self.el_num - 1.0)/2, self.el_num)
 
-    # print el_n
     self.el_x = 2 * np.pi * self.el_sep * el_n
     self.el_y = el_n * 0
     self.el_amp = np.ones(el_n.shape)
@@ -51,6 +50,20 @@ def ffmpeg_vp8(self, path, prefix):
                '-vcodec',
                'libvpx',
                path + prefix + '.webm')
+    subprocess.check_call(command)
+
+def ffmpeg_x264(self, path, prefix):
+    """Encodes video to webm using ffmpeg"""
+    command = ('ffmpeg',
+               '-f',
+               'image2',
+               '-i',
+               path + prefix + '%03d.png',
+               '-r',
+               '25',
+               '-vcodec',
+               'libx264',
+               path + prefix + '.avi')
     subprocess.check_call(command)
 
 def mencoder(self, path, prefix):
