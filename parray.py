@@ -93,7 +93,6 @@ class PhasedArray:
         self._fldax = self._fig.add_axes([0.0, 0.4, 1.0, 0.6])
         self._datax = self._fig.add_axes([0.05, 0.05, 0.9, 0.35])
         self._datax.set_axis_bgcolor((0.4, 0.4, 0.4))
-        self._datax.twinx()
         self._cindx = np.linspace(0.0, 1.0, self.el_num)
     
     # Define a replacable implementation of array element generator
@@ -124,17 +123,23 @@ class PhasedArray:
         """Displays field"""
         #zm = np.ma.masked_array(z, mask = self._mask)
         self._fldax.cla()
+        self._datax.cla()
+        self._datax.grid(True)
+        num = np.arange(self.el_num) + 1
+
         self._fldax.set_axis_off()
         self._fldax.contourf(self._x, self._y, self._z)
         self._fldax.scatter(self.el_x, self.el_y, marker = 'o', c = self._cindx)
 
-        self._datax.cla()
-        self._datax.grid(True)
-        num = np.arange(self.el_num) + 1
         self._datax.scatter(num, self.el_amp, marker = 'o', c = self._cindx)
-        self._datax.add_line(Line2D(num, self.el_amp))
+        self._datax.add_line(Line2D(num, self.el_amp, 
+                                    color = 'b', label = 'Amplitude'))
+
         self._datax.scatter(num, self.el_phi, marker = 's', c = self._cindx)
-        self._datax.add_line(Line2D(num, self.el_phi))
+        self._datax.add_line(Line2D(num, self.el_phi, 
+                                    color = 'r', label = 'Phase'))
+
+        self._datax.legend(frameon = False, loc = 'upper left' )
         
     def simulate(self):
         """Runs phased array simulation (static)"""
