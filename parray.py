@@ -109,10 +109,10 @@ class PhasedArray:
         self._phiax = self._fig.add_axes([0.55, 0.05, 0.4, 0.35])
         self._phiax.set_axis_bgcolor((0.4, 0.4, 0.4))
         self._cindx = np.linspace(0.0, 1.0, self.el_num)
-    
+
     # Define a replacable implementation of array element generator
     gen_elements = common_PA_elements
-    
+
     def calc_field(self):
         """Calculates field"""
 
@@ -133,7 +133,7 @@ class PhasedArray:
             #val = (az / r ** 2) * np.sin(r + pz)    # Implement inverse square
             val = az * np.sin(r + pz)
             self._z = self._z + val
-        
+
     def render(self):
         """Displays field"""
         #zm = np.ma.masked_array(z, mask = self._mask)
@@ -147,18 +147,18 @@ class PhasedArray:
         self._ampax.clear()
         self._ampax.grid(True)
         self._ampax.scatter(num, self.el_amp, marker = 's', c = self._cindx)
-        self._ampax.add_line(Line2D(num, self.el_amp, 
+        self._ampax.add_line(Line2D(num, self.el_amp,
                                     color = 'b', label = 'Amplitude'))
         self._ampax.legend(frameon = False)
 
         self._phiax.clear()
         self._phiax.grid(True)
         self._phiax.scatter(num, self.el_phi, marker = 's', c = self._cindx)
-        self._phiax.add_line(Line2D(num, self.el_phi, 
+        self._phiax.add_line(Line2D(num, self.el_phi,
                                     color = 'r', label = 'Phase'))
         self._phiax.legend(frameon = False)
 
-        
+
     def simulate(self):
         """Runs phased array simulation (static)"""
         self.gen_elements()
@@ -167,21 +167,21 @@ class PhasedArray:
         self._fig.show()
 
     # Define a replacable implementation of video encoder
-    vencode = ffmpeg_vp8
-        
+    vencode = ffmpeg_x264
+
     def animate(self, path, prefix, phase_range, frames):
         """Creates animation pngs"""
-        for i in xrange(frames):
+        for i in range(frames):
             self.gen_elements()
             self.calc_field()
             self.render()
-            print 'Creating frame: ', i
+            print ('Creating frame: ', i)
 
             filename = path + prefix + str('%03d' % i) + '.png'
             self._fig.savefig(filename, dpi = 100)
             self.el_phs = self.el_phs + phase_range / frames
-            
-        print 'Encoding video'
+
+        print ('Encoding video')
         self.vencode(path, prefix)
 
 #############################################
@@ -214,5 +214,3 @@ params_endfire = {    \
 
 PAEndfire = PhasedArray(**params_endfire)
 #############################################
-
-
